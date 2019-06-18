@@ -78,11 +78,17 @@ let build_data_impl = () => {
     let makeitem = n => {
       id: n + state^,
       label:
-        adjectives[random(Array.length(adjectives))]
+        Belt.Array.getUnsafe(
+          adjectives,
+          random(Belt.Array.length(adjectives)),
+        )
         ++ " "
-        ++ colours[random(Array.length(colours))]
+        ++ Belt.Array.getUnsafe(
+             colours,
+             random(Belt.Array.length(colours)),
+           )
         ++ " "
-        ++ names[random(Array.length(names))],
+        ++ Belt.Array.getUnsafe(names, random(Belt.Array.length(names))),
     };
     let generated = Belt.Array.makeBy(count, makeitem);
     state := state^ + count;

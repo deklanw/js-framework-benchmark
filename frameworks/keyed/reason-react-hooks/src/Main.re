@@ -5,7 +5,7 @@ type main_state_t = {
   selected: option(item),
 };
 
-let exclaim = (idx, d: item) =>
+let exclaim = (d: item, idx) =>
   if (0 == idx mod 10) {
     {...d, label: d.label ++ " !!!"};
   } else {
@@ -34,7 +34,7 @@ let myReducer = (state, action) => {
     /*
      Array.iteri(exclaim_inplace(state.data), state.data);
      */
-    {...state, data: Array.mapi(exclaim, state.data)}
+    {...state, data: Js.Array.mapi(exclaim, state.data)}
 
   | SELECT(i) => {...state, selected: Some(i)}
 
@@ -51,12 +51,12 @@ let myReducer = (state, action) => {
   | CLEAR => {data: [||], selected: None}
 
   | SWAPROWS =>
-    if (Array.length(state.data) > 998) {
-      let newArray = Array.copy(state.data);
-      let elem_1 = newArray[1];
-      let elem_2 = newArray[998];
-      newArray[1] = elem_2;
-      newArray[998] = elem_1;
+    if (Belt.Array.length(state.data) > 998) {
+      let newArray = Belt.Array.copy(state.data);
+      let elem_1 = Belt.Array.getUnsafe(newArray, 1);
+      let elem_2 = Belt.Array.getUnsafe(newArray, 998);
+      Belt.Array.set(newArray, 1, elem_2);
+      Belt.Array.set(newArray, 998, elem_1);
       {...state, data: newArray};
     } else {
       state;
@@ -81,15 +81,13 @@ let make = () => {
     <table className="table table-hover table-striped test-data">
       <tbody>
         {React.array(
-           Array.map(
-             (item: item) =>
-               <Row
-                 key={item.id |> string_of_int}
-                 item
-                 selected={is_selected(item)}
-                 sender
-               />,
-             state.data,
+           Belt.Array.map(state.data, (item: item) =>
+             <Row
+               key={item.id |> string_of_int}
+               item
+               selected={is_selected(item)}
+               sender
+             />
            ),
          )}
       </tbody>
